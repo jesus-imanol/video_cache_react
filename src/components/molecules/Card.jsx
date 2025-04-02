@@ -4,7 +4,7 @@ function CardDisplay({ movie }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const handleToPlay = () => {
-    navigate(`play/${movie.id}`, { state: { movie } });
+    navigate(`../play/${movie.id}`, { state: { movie } });
     console.log(movie);
     
 };

@@ -6,7 +6,7 @@ function HeaderComponent() {
   const navigate = useNavigate();
 
   const menuItems = [
-    { name: 'Inicio', route: '/' },
+    { name: 'Inicio', route: '/home' },
     { name: 'Películas', route: '/movies' },
     { name: 'Novedades', route: '/news' },
   ];
