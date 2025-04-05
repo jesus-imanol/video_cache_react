@@ -5,6 +5,7 @@ import PlayVideo from './pages/PlayVideo';
 import News from './pages/News';
 import Movies from './pages/Movies';
 import AnimatedLogin from './pages/AnimatedLogin';
+import Register from './pages/Register';
 function App() {
 
   return (
@@ -15,6 +16,8 @@ function App() {
       <Route path="/news" element={<News />} />
       <Route path="/movies" element={<Movies />} />
       <Route path="/" element={< AnimatedLogin/>} />
+      <Route path="/register" element={< Register/>} />
+
       </Routes>
     </BrowserRouter>
   )

@@ -1,31 +1,59 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, Link } from 'react-router-dom';
 const NetflixLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   
-  const validCredentials = {
-    email: 'jesusimanolcastillo@gmail.com',
-    password: 'jesusima'
-  };
-  
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsAnimating(true);
+    setError('');
     
-    setTimeout(() => {
-      if (email === validCredentials.email && password === validCredentials.password) {
+    try {
+      const response = await fetch('http://127.0.0.1:3000/v1/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password_hash: password
+        }),
+      });
+      
+      if (response.ok) {
+        // Extract the token from the Authorization header
+        const authHeader = response.headers.get('Authorization');
+        const token = authHeader ? authHeader.replace('Bearer ', '') : '';
+        
+        // Get user data from response body
+        const userData = await response.json();
+        
+        // Store both token and user info in localStorage
+        localStorage.setItem('authToken', token);
+        
+        if (userData && userData.data && userData.data.attributes) {
+          localStorage.setItem('userName', userData.data.attributes.full_name);
+          localStorage.setItem('userEmail', userData.data.attributes.email);
+          localStorage.setItem('userId', userData.data.id);
+        }
+        
         navigate('/home');
       } else {
-        alert('Credenciales incorrectas');
+        const errorData = await response.json();
+        setError(errorData.message || 'Credenciales incorrectas');
       }
+    } catch (error) {
+      setError('Error de conexión. Por favor intenta de nuevo.');
+      console.error('Login error:', error);
+    } finally {
       setIsAnimating(false);
-    }, 1500);
+    }
   };
   
   return (
@@ -47,9 +75,16 @@ const NetflixLogin = () => {
       <div className={`relative z-10 bg-black bg-opacity-75 rounded-md overflow-hidden w-full max-w-md p-16 transform transition-all duration-500 border border-gray-800 ${isAnimating ? 'scale-105' : 'scale-100'}`}>
         <div className="mb-8">
           <h1 className="font-bold text-3xl text-white mb-6">Inicia sesión</h1>
-          <p>    email: jesusimanolcastillo@gmail.com 
-          password: jesusima</p>
+          <p className="text-gray-400 text-sm">
+            Accede con tus credenciales
+          </p>
         </div>
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-900 bg-opacity-50 text-red-200 rounded text-sm">
+            {error}
+          </div>
+        )}
         
         <form onSubmit={handleLogin} className="space-y-6 flex flex-col gap-6">
           <div>
@@ -129,18 +164,15 @@ const NetflixLogin = () => {
               </label>
             </div>
             <div className="text-sm">
-              <a href="#" className="font-medium text-gray-400 hover:text-gray-300">
-                ¿Necesitas ayuda?
-              </a>
+        
             </div>
           </div>
         </form>
         
         <div className="mt-8">
           <p className="text-gray-500 mb-4">
-            ¿Primera vez en Screamed? <a href="#" className="text-white hover:underline">Suscríbete ahora</a>.
+             <Link to="/register" className="text-white hover:underline">Registrate aqui</Link>.
           </p>
-    
         </div>
       </div>
     </div>

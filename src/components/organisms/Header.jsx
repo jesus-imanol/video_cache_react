@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function HeaderComponent() {
   const [activeMenu, setActiveMenu] = useState('Inicio');
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
+
+  // Get username from localStorage when component mounts
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('userName');
+    if (storedUserName) {
+      setUserName(storedUserName);
+    }
+  }, []);
 
   const menuItems = [
     { name: 'Inicio', route: '/home' },
@@ -14,6 +23,15 @@ function HeaderComponent() {
   const handleToNavigate = (route) => {
     setActiveMenu(route);
     navigate(route);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    navigate('/');
   };
 
   return (
@@ -82,22 +100,44 @@ function HeaderComponent() {
               </span>
             </button>
 
-            {/* Profile */}
-            <div className="flex items-center space-x-2">
-              <img
-                src="unnamed.jpg"
-                alt="Profile"
-                className="rounded-md h-8 w-8 object-cover"
-              />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+            {/* Profile dropdown */}
+            <div className="relative group">
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <img
+                  src="unnamed.jpg"
+                  alt="Profile"
+                  className="rounded-md h-8 w-8 object-cover"
+                />
+                <span className="text-white text-sm font-medium hidden sm:inline">{userName || 'Usuario'}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-white group-hover:rotate-180 transition-transform duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              
+              {/* Dropdown menu */}
+              <div className="absolute right-0 mt-2 w-48 bg-black/90 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                <div className="px-4 py-2 border-b border-gray-700">
+                  <p className="text-white text-sm font-medium">{userName || 'Usuario'}</p>
+                </div>
+                <a href="/profile" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white">
+                  Mi perfil
+                </a>
+                <a href="/settings" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white">
+                  Configuración
+                </a>
+                <button 
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
             </div>
           </div>
         </div>
