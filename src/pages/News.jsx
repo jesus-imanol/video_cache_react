@@ -19,7 +19,10 @@ function News() {
   return (
     <div className="bg-[#000000cd] min-h-screen text-gray-200">
       <HeaderComponent />
-      
+
+      {/* Hero section con imagen de Rick y Morty de fondo */}
+      {/* Hero section con imagen de Rick y Morty de fondo */}
+      {/* Hero section con imagen de Rick y Morty de fondo */}
 {/* Hero section con imagen de Rick y Morty de fondo */}
 <div className="relative">
   <div className="w-full h-96 flex items-center justify-center overflow-hidden">
